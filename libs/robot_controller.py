@@ -19,5 +19,49 @@ import time
 class Snatch3r(object):
     """Commands for the Snatch3r robot that might be useful in many different programs."""
     
-    # TODO: Implement the Snatch3r class as needed when working the sandox exercises
-    # (and delete these comments)
+    def __init__(self):
+        self.left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+        self.right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+        # Check that the motors are actually connected
+        assert self.left_motor.connected
+        assert self.right_motor.connected
+
+
+    def drive_inches(self, inches_target, speed_deg_per_second):
+        assert self.left_motor.connected
+        assert self.right_motor.connected
+
+        degrees_per_inch = 90
+        motor_turns_needed_in_degrees = inches_target * degrees_per_inch
+
+        self.left_motor.run_to_rel_pos(
+            position_sp=motor_turns_needed_in_degrees,
+            speed_sp=speed_deg_per_second,
+            stop_action=ev3.Motor.STOP_ACTION_BRAKE)
+        self.right_motor.run_to_rel_pos(
+            position_sp=motor_turns_needed_in_degrees,
+            speed_sp=speed_deg_per_second,
+            stop_action=ev3.Motor.STOP_ACTION_BRAKE)
+        self.left_motor.wait_while(ev3.Motor.STATE_RUNNING)
+        self.right_motor.wait_while(ev3.Motor.STATE_RUNNING)
+
+    def turn_degrees(self, degrees_to_turn, speed_deg_per_second):
+        # If degrees_to_turn is negative, then motor_turns will be too, and the formulas will work.
+        motor_turns_per_degree_to_turn = 5
+        motor_turns_needed = degrees_to_turn * motor_turns_per_degree_to_turn
+
+        self.left_motor.run_to_rel_pos(
+            position_sp=-motor_turns_needed,
+            speed_sp=speed_deg_per_second,
+            stop_action=ev3.Motor.STOP_ACTION_BRAKE)
+        self.right_motor.run_to_rel_pos(
+            position_sp=motor_turns_needed,
+            speed_sp=speed_deg_per_second,
+            stop_action=ev3.Motor.STOP_ACTION_BRAKE)
+        self.left_motor.wait_while(ev3.Motor.STATE_RUNNING)
+        self.right_motor.wait_while(ev3.Motor.STATE_RUNNING)
+
+
+
+
+
