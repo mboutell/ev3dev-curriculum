@@ -43,5 +43,44 @@ Authors: David Fisher and PUT_YOUR_NAME_HERE.
 # TODO: 7. Call over a TA or instructor to sign your team's checkoff sheet and do a code review.
 #
 # Observations you should make, run_to_rel_pos is easier to use since it uses encoders that are independent of speed.
+import ev3dev.ev3 as ev3
+import time
+print("--------------------------------------------")
+print("  Drive using encoders")
+print("--------------------------------------------")
+ev3.Sound.speak("Drive using encoders").wait()
+
+# Connect two large motors on output ports B and C
+left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+
+# Check that the motors are actually connected
+assert left_motor.connected
+assert right_motor.connected
+
+while True:
+    speed_in_degrees_per_second = int(input('Enter a speed (0 to 900 dps): '))
+    distance_in_inches = int(input('Distance to travel (inches):'))
+    if distance_in_inches == 0 or speed_in_degrees_per_second == 0:
+        break
+
+    degrees_per_inch = 90
+    motor_turns_needed_in_degrees = distance_in_inches * degrees_per_inch
+
+    left_motor.run_to_rel_pos(
+        position_sp=motor_turns_needed_in_degrees,
+        speed_sp=speed_in_degrees_per_second,
+        stop_action=ev3.Motor.STOP_ACTION_BRAKE)
+    right_motor.run_to_rel_pos(
+        position_sp=motor_turns_needed_in_degrees,
+        speed_sp=speed_in_degrees_per_second,
+        stop_action=ev3.Motor.STOP_ACTION_BRAKE)
+    left_motor.wait_while(ev3.Motor.STATE_RUNNING)
+    right_motor.wait_while(ev3.Motor.STATE_RUNNING)
+    ev3.Sound.beep().wait()
+
+print("Goodbye!")
+ev3.Sound.speak("Goodbye").wait()
+
 
 

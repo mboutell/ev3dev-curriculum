@@ -29,16 +29,16 @@ Authors: David Fisher and PUT_YOUR_NAME_HERE.
 #
 #  Record your calculated speed conversions here:
 #   Tests @ 10 seconds:
-#     100 degrees / second  -->  traveled XXX inches  -->  YYY inches / second
-#     200 degrees / second  -->  traveled XXX inches  -->  YYY inches / second
-#     300 degrees / second  -->  traveled XXX inches  -->  YYY inches / second
-#     400 degrees / second  -->  traveled XXX inches  -->  YYY inches / second
+#     100 degrees / second  -->  traveled 13.5 inches  -->  1.35 inches / second
+#     200 degrees / second  -->  traveled 24.5 inches  -->  2.45 inches / second
+#     300 degrees / second  -->  traveled 35.5 inches  -->  3.55 inches / second
+#     400 degrees / second  -->  traveled 45.5 inches  -->  4.55 inches / second
 #   Tests @ 5 seconds:
-#     500 degrees / second  -->  traveled XXX inches  -->  YYY inches / second
-#     600 degrees / second  -->  traveled XXX inches  -->  YYY inches / second
-#     700 degrees / second  -->  traveled XXX inches  -->  YYY inches / second
-#     800 degrees / second  -->  traveled XXX inches  -->  YYY inches / second
-#     900 degrees / second  -->  traveled XXX inches  -->  YYY inches / second (probably no faster than 800)
+#     500 degrees / second  -->  traveled 28.5 inches  -->  5.7 inches / second
+#     600 degrees / second  -->  traveled 34.25 inches  -->  6.85 inches / second
+#     700 degrees / second  -->  traveled 40.5 inches  -->  8.1 inches / second
+#     800 degrees / second  -->  traveled 45 inches  -->  9 inches / second
+#     900 degrees / second  -->  raveled 48.5 inches  -->  9.7 inches / second (probably no faster than 800)
 #
 # TODO: 3. Make an equation
 #   Derive from that information a way to convert a given degrees per second speed into an inches / second speed.
@@ -47,7 +47,9 @@ Authors: David Fisher and PUT_YOUR_NAME_HERE.
 #       make the value for m and b perfect, but that is overkill.  You have permission to set b = 0 and just pick an m
 #       that would roughly fit most of your data.  Put your value for m below and think about if it most fits:
 #
-#       speed_in_inches_per_second = m * speed_in_degrees_per_second + 0
+#       speed_in_inches_per_second = .012 * speed_in_degrees_per_second + 0
+#
+#       (Note: I divided for each of the 8 valid speeds, then averaged to get 0.01182455357, which I rounded
 #
 #     Eventually your goal is to make an equation that will allow users to input any distance in inches and any speed in
 #     degrees per second, then output the time needed to drive the correct distance at that speed.  So eventually you
@@ -89,3 +91,38 @@ Authors: David Fisher and PUT_YOUR_NAME_HERE.
 # TODO: 8. Call over a TA or instructor to sign your team's checkoff sheet and do a code review.
 #
 #  Observation you should make, the pattern run_forever-->time.sleep-->stop naturally blocks code execution until done.
+import ev3dev.ev3 as ev3
+import time
+
+print("--------------------------------------------")
+print("  Timed Driving")
+print("--------------------------------------------")
+ev3.Sound.speak("Drive using input").wait()
+
+# Connect two large motors on output ports B and C
+left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+
+# Check that the motors are actually connected
+assert left_motor.connected
+assert right_motor.connected
+
+while True:
+    speed_in_degrees_per_second = int(input('Enter a speed (0 to 900 dps): '))
+    distance = int(input('Distance to travel (inches):'))
+    if distance == 0 or speed_in_degrees_per_second == 0:
+        break
+
+    speed_in_inches_per_second = .012 * speed_in_degrees_per_second
+    time_to_drive = distance / speed_in_inches_per_second
+
+    left_motor.run_forever(speed_sp=speed_in_degrees_per_second)
+    right_motor.run_forever(speed_sp=speed_in_degrees_per_second)
+
+    time.sleep(time_to_drive)
+    left_motor.stop()
+    right_motor.stop()
+
+print("Goodbye!")
+ev3.Sound.speak("Goodbye").wait()
+
