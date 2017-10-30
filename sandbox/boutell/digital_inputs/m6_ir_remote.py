@@ -25,8 +25,8 @@
     -- Pressing the Back button will allow your program to end.  It should stop motors, turn on both green LEDs, and
        then print and say Goodbye.  You will need to implement a new robot method called shutdown to handle this task.
 
-Authors: David Fisher and PUT_YOUR_NAME_HERE.
-"""  # TODO: 1. PUT YOUR NAME IN THE ABOVE LINE.
+Authors: David Fisher and Matt Boutell.
+"""  # DONE: 1. PUT YOUR NAME IN THE ABOVE LINE.
 
 import ev3dev.ev3 as ev3
 import time
@@ -58,9 +58,23 @@ def main():
     robot = robo.Snatch3r()
     dc = DataContainer()
 
-    # TODO: 4. Add the necessary IR handler callbacks as per the instructions above.
+    # DONE: 4. Add the necessary IR handler callbacks as per the instructions above.
     # Remote control channel 1 is for driving the crawler tracks around (none of these functions exist yet below).
     # Remote control channel 2 is for moving the arm up and down (all of these functions already exist below).
+    rc1 = ev3.RemoteControl(channel=1)
+    assert rc1.connected
+    rc1.on_red_up = lambda state: handle_red_up_1(state, robot, dc)
+    rc1.on_red_down = lambda state: handle_red_down_1(state, robot, dc)
+    rc1.on_blue_up = lambda state: handle_blue_up_1(state, robot, dc)
+    rc1.on_blue_down= lambda state: handle_blue_down_1(state, robot, dc)
+
+    rc2 = ev3.RemoteControl(channel=2)
+    assert rc2.connected
+    rc2.on_red_up = lambda state: handle_arm_up_button(state, robot)
+    rc2.on_red_down = lambda state: handle_arm_down_button(state, robot)
+    rc2.on_blue_up = lambda state: handle_calibrate_button(state, robot)
+    # rc2.on_blue_down= lambda state: no_op(state, dc)
+
 
     # For our standard shutdown button.
     btn = ev3.Button()
@@ -71,6 +85,8 @@ def main():
     while dc.running:
         # TODO: 5. Process the RemoteControl objects.
         btn.process()
+        rc1.process()
+        rc2.process()
         time.sleep(0.01)
 
     # TODO: 2. Have everyone talk about this problem together then pick one  member to modify libs/robot_controller.py
@@ -86,6 +102,50 @@ def main():
 # Movement event handlers have not been provided.
 # ----------------------------------------------------------------------
 # TODO: 6. Implement the IR handler callbacks handlers.
+def handle_red_up_1(button_state, robot, dc):
+    # -- Pressing  red up   makes the left  LED turn green and the left_motor  move at  600.
+    #      Releasing turns off the LED and stops left_motor.
+    print("red up")
+    if button_state:
+        robot.drive_left_some(600)
+        ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.GREEN)
+    else:
+        robot.stop_left_motor()
+        ev3.Leds.all_off()
+
+def handle_red_down_1(button_state, robot, dc):
+    # -- Pressing  red down makes the left  LED turn red   and the left_motor  move at -600.
+    #      Releasing turns off the LED and stops left_motor.
+    print("red down")
+    if button_state:
+        robot.drive_left_some(-600)
+        ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.RED)
+    else:
+        robot.stop_left_motor()
+        ev3.Leds.all_off()
+
+def handle_blue_up_1(button_state, robot, dc):
+    # -- Pressing  blue up  makes the right LED turn green and the right_motor move at  600.
+    #      Releasing turns off the LED and stops right_motor.
+    print("blue up")
+    if button_state:
+        robot.drive_right_some(600)
+        ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.GREEN)
+    else:
+        robot.stop_right_motor()
+        ev3.Leds.all_off()
+
+def handle_blue_down_1(button_state, robot, dc):
+    # -- Pressing blue down makes the right LED turn red   and the right_motor move at -600.
+    #      Releasing turns off the LED and stops right_motor.
+    print("blue down")
+    if button_state:
+        robot.drive_right_some(-600)
+        ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.RED)
+    else:
+        robot.stop_right_motor()
+        ev3.Leds.all_off()
+
 
 # TODO: 7. When your program is complete, call over a TA or instructor to sign your checkoff sheet and do a code review.
 #
