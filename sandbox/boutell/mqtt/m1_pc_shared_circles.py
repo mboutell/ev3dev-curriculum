@@ -91,7 +91,7 @@ def left_mouse_click(event, mqtt_client):
     """ Draws a circle onto the canvas (one way or another). """
     print("You clicked location ({},{})".format(event.x, event.y))
 
-    # TODO: 6. Talk to your team members and have everyone pick a unique color.
+    # DONE: 6. Talk to your team members and have everyone pick a unique color.
     # Examples... "red", "green", "blue", "yellow", "aquamarine", "magenta", "navy", "orange"
     my_color = "magenta"  # Make your color unique
 
