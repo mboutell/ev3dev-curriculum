@@ -114,6 +114,35 @@ class Snatch3r(object):
     def stop_right_motor(self):
         self.right_motor.stop(stop_action=ev3.Motor.STOP_ACTION_COAST)
 
+    def stop(self):
+        self.stop_left_motor()
+        self.stop_right_motor()
+
+    def drive_forward(self, left_speed, right_speed):
+        self.drive_left_some(left_speed)
+        self.drive_right_some(right_speed)
+
+    def turn_left_until_stop(self, left_speed, right_speed):
+        self.left_motor.run_forever(speed_sp=-left_speed)
+        self.right_motor.run_forever(speed_sp=right_speed)
+
+    def turn_right_until_stop(self, left_speed, right_speed):
+        self.left_motor.run_forever(speed_sp=left_speed)
+        self.right_motor.run_forever(speed_sp=-right_speed)
+
+
+    def loop_forever(self):
+        # This is a convenience method that I don't really recommend for most programs other than mqtt/m5.
+        #   This method is only useful if the only input to the robot is coming via mqtt.
+        #   MQTT messages will still call methods, but no other input or output happens.
+        # This method is given here since the concept might be confusing.
+        self.running = True
+        while self.running:
+            time.sleep(0.1)  # Do nothing (except receive MQTT messages) until an MQTT message calls shutdown.
+
     def shutdown(self):
-        # What to do here?
-        pass
+        # Modify a variable that will allow the loop_forever method to end. Additionally stop motors and set LEDs green.
+        # The most important part of this method is given here, but you should add a bit more to stop motors, etc.
+        self.running = False
+
+
