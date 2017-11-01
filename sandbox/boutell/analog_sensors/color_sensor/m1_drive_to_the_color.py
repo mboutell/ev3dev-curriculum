@@ -13,8 +13,8 @@ If the user presses the Down  button, the robot drives until the robot gets to B
 If the user presses the Left  button, the robot drives until the robot gets to Black.
 If the user presses the Right button, the robot drives until the robot gets to White.
 
-Authors: David Fisher and PUT_YOUR_NAME_HERE.
-"""  # TODO: 1. PUT YOUR NAME IN THE ABOVE LINE.
+Authors: David Fisher and Matt Boutell.
+"""  # DONE: 1. PUT YOUR NAME IN THE ABOVE LINE.
 
 import ev3dev.ev3 as ev3
 import time
@@ -59,10 +59,10 @@ def main():
     # For our standard shutdown button.
     btn = ev3.Button()
     # TODO: 2. Uncomment the lines below to setup event handlers for these buttons.
-    # btn.on_up = lambda state: drive_to_color(state, robot, ev3.ColorSensor.COLOR_RED)
-    # btn.on_down = lambda state: drive_to_color(state, robot, ev3.ColorSensor.COLOR_BLUE)
-    # btn.on_left = lambda state: drive_to_color(state, robot, ev3.ColorSensor.COLOR_BLACK)
-    # btn.on_right = lambda state: drive_to_color(state, robot, ev3.ColorSensor.COLOR_WHITE)
+    btn.on_up = lambda state: drive_to_color(state, robot, ev3.ColorSensor.COLOR_RED)
+    btn.on_down = lambda state: drive_to_color(state, robot, ev3.ColorSensor.COLOR_BLUE)
+    btn.on_left = lambda state: drive_to_color(state, robot, ev3.ColorSensor.COLOR_BLACK)
+    btn.on_right = lambda state: drive_to_color(state, robot, ev3.ColorSensor.COLOR_WHITE)
     btn.on_backspace = lambda state: handle_shutdown(state, dc)
 
     while dc.running:
@@ -89,12 +89,17 @@ def drive_to_color(button_state, robot, color_to_seek):
     if button_state:
         ev3.Sound.speak("Seeking " + COLOR_NAMES[color_to_seek]).wait()
 
-        # TODO: 3. Implement the task as stated in this module's initial comment block
+        # DONE: 3. Implement the task as stated in this module's initial comment block
         # It is recommended that you add to your Snatch3r class's constructor the color_sensor, as shown
         #   self.color_sensor = ev3.ColorSensor()
         #   assert self.color_sensor
         # Then here you can use a command like robot.color_sensor.color to check the value
-
+        robot.drive_forward(200, 200)
+        while True:
+            if robot.color_sensor.color == color_to_seek:
+                break
+            time.sleep(0.02)
+        robot.stop()
 
 
         # TODO: 4. Call over a TA or instructor to sign your team's checkoff sheet.
