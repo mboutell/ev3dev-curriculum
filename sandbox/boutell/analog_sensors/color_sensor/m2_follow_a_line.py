@@ -29,8 +29,8 @@ def main():
 
     # TODO: 4: After running the code set the default white and black levels to a better initial guess.
     #   Once you have the values hardcoded to resonable numbers here you don't really need the w and b commands below.
-    white_level = 50
-    black_level = 40
+    white_level = 95
+    black_level = 5
     robot = robo.Snatch3r()
 
     while True:
@@ -82,18 +82,22 @@ def follow_the_line(robot, white_level, black_level):
     # If I see black, all is well - drive straight.
     # If I see something in between, I can turn right, but not spin right.
 
+
+
     while True:
         light = robot.color_sensor.reflected_light_intensity
+        print("light = ", light)
         if light >= white_level-10:
             robot.turn_right_until_stop(200, 200)
         elif light <= black_level+10:
             robot.drive_forward(200, 200)
         else:
-            # in between. CONSIDER: Make the speed proportional to the light
-            speed = int(200*(light-black_level)/(white_level-black_level))
+            # in between. Make the speed proportional to the light
+            speed = int(300*(light-black_level)/(white_level-black_level))
             robot.turn_right_until_stop(200, speed)
 
-        if robot.touch_sensor:
+        if robot.touch_sensor.is_pressed:
+            print("Touch sensor pressed")
             break
 
         time.sleep(0.1)
