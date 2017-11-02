@@ -5,8 +5,8 @@ the robot so that it is always facing the color signature.  You will need to tea
 implement the code, then make the robot always face the color as you move it around.  The robot will only spin and never
 move forwards or backwards.
 
-Authors: David Fisher and PUT_YOUR_NAME_HERE.
-"""  # TODO: 1. PUT YOUR NAME IN THE ABOVE LINE.
+Authors: David Fisher and Matt Boutell.
+"""  # DONE: 1. PUT YOUR NAME IN THE ABOVE LINE.
 
 import ev3dev.ev3 as ev3
 import time
@@ -31,6 +31,11 @@ def main():
 
         # TODO: 2. Read the Pixy values for x and y
         # Print the values for x and y
+        x = robot.pixy.value(1)
+        y = robot.pixy.value(2)
+        width = robot.pixy.value(3)
+        height = robot.pixy.value(4)
+        print("(X,Y)=({},{}), Width={} Height={}".format(x, y, width, height))
 
         # TODO: 3. Use the x value to turn the robot
         #   If the Pixy x value is less than 150 turn left (-turn_speed, turn_speed)
@@ -38,7 +43,15 @@ def main():
         #   If the Pixy x value is between 150 and 170 stop the robot
         # Continuously track the color until the touch sensor is pressed to end the program.
 
-
+        if width > 10:
+            center = x + width/2
+            turn_speed = int(abs(center - 160)*4) # proportional
+            if center < 150:
+                robot.turn_left_until_stop(turn_speed, turn_speed)
+            elif center > 170:
+                robot.turn_right_until_stop(turn_speed, turn_speed)
+            else:
+                robot.stop()
 
         time.sleep(0.25)
 
